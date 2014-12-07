@@ -25,14 +25,15 @@ var             x
 f_var           [yf](\({var}\))?
 add             \ ?\+\ ?
 sub             \ ?\-\ ?
+times           \ ?"\\cdot"\ ?
 eq              \ ?\=\ ?
-real            -?{num}+(\.{num}+)?
+real            -?{num}+("."{num}+)?
 
 var_exp         \^{real}
-monomial        {real}?({var}({var_exp})?)|{real}
+monomial        ({var}({var_exp})?)|{real}
 polynomial      {monomial}(({add}|{sub}){monomial})*
 elsc            \\(exp|log|sin|cos)\({polynomial}\){var_exp}?
-type_of_func    ({polynomial}|{elsc})
+type_of_func    ({real}{times})?({polynomial}|{elsc})
 right_part      ({type_of_func})(({add}|{sub})({type_of_func}))*
 function        {f_var}{eq}{right_part}
 
@@ -88,7 +89,7 @@ string transform_function(string latex_form){
 
     // Producto
     while((replace_pos = result.find("\\cdot")) != -1){
-        result = result.replace(replace_pos, 4, "*");
+        result = result.replace(replace_pos, 5, "*");
     }
 
     // Potencia
@@ -120,9 +121,9 @@ string transform_function(string latex_form){
 }
 
 void insert_graphs (){
-    file << "\\begin{tikzpicture}[domain=-3:3]\n"
-         << "\\draw[->] (-3.1,0) -- (3.2,0) node[right] {$x$};\n"
-         << "\\draw[->] (0,-6) -- (0,13) node[above] {$f(x)$};\n";
+    file << "\\begin{tikzpicture}[domain=-2:2]\n"
+         << "\\draw[->] (-2.1,0) -- (2.2,0) node[right] {$x$};\n"
+         << "\\draw[->] (0,-2) -- (0,4) node[above] {$f(x)$};\n";
     
     while(!graphs.empty()){
         file << "\\draw[color=" << colors[i] << "] plot function{"<< graphs.front() <<"};\n";
@@ -131,9 +132,9 @@ void insert_graphs (){
     }
 
     file << "% xticks and yticks\n"
-         << "\\foreach \\x in {-3,-2,...,3}\n"
+         << "\\foreach \\x in {-2,-1,...,2}\n"
          << "\\node at (\\x, 0) [below] {\\x};\n"
-         << "\\foreach \\y in {-6,-5,...,13}\n"
+         << "\\foreach \\y in {-2,-1,...,4}\n"
          << "\\node at (0,\\y) [left] {\\y};\n"
          << "\\end{tikzpicture}\n";
 }
