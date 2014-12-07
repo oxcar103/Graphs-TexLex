@@ -31,12 +31,11 @@ real            -?{num}+(\.{num}+)?
 var_exp         \^{real}
 monomial        {real}?({var}({var_exp})?)|{real}
 polynomial      {monomial}(({add}|{sub}){monomial})*
-p_function      {f_var}{eq}{polynomial}
-exp             \\exp\({p_function}\){var_exp}?
-log             \\log\({p_function}\){var_exp}?
-l/e_function    ({exp}|{log})(({add}|{sub}){p_function})*
-function        ({p_function}|{l/e_function})
-
+exp             \\exp\({polynomial}\){var_exp}?
+log             \\log\({polynomial}\){var_exp}?
+type_of_func    ({polynomial}|{log}|{exp})
+right_part      ({type_of_func})(({add}|{sub})({type_of_func}))*
+function        {f_var}{eq}{right_part}
 
 %%
 
@@ -47,7 +46,10 @@ function        ({p_function}|{l/e_function})
 <MATH_ENV>\$\$                          { file << yytext; BEGIN(INITIAL); }
 <MATH_MODE>{function}                   { file << yytext; function_found(string(yytext)); }
 <MATH_ENV>{function}                    { file << yytext; function_found(string(yytext)); }
-(\n\n|"\\")                             { file << yytext; if(!graphs.empty()){insert_graphs();} }
+(\n\n|"\\\\")                           { file << yytext; if(!graphs.empty()){insert_graphs();} }
+
+<MATH_MODE>(.|\n)                       { file << yytext; }
+<MATH_ENV>(.|\n)                        { file << yytext; }
 (.|\n)                                  { file << yytext; }
 
 %%
