@@ -32,7 +32,9 @@ var_exp         \^{real}
 monomial        {real}?({var}({var_exp})?)|{real}
 polynomial      {monomial}(({add}|{sub}){monomial})*
 p_function      {f_var}{eq}{polynomial}
-function        {p_function}
+exp             \\exp\({p_function}\){var_exp}?
+exp_function    {exp}(({add}|{sub}){p_function})*
+function        ({p_function}|{exp_function})
 
 
 %%
@@ -90,6 +92,11 @@ string transform_function(string latex_form){
     // Potencia
     while((replace_pos = result.find("^")) != -1){
         result = result.replace(replace_pos, 1, "**");
+    }
+
+    // Exponencial
+    while((replace_pos = result.find("\\exp")) != -1){
+        result = result.erase(replace_pos, 1);
     }
 
     return result;
