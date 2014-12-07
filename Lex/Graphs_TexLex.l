@@ -87,6 +87,11 @@ string transform_function(string latex_form){
     string result = latex_form.erase(0, latex_form.find("=") + 1);
     int replace_pos;
 
+    // Espacios
+    while((replace_pos = result.find(" ")) != -1){
+        result = result.erase(replace_pos, 1);
+    }
+
     // Producto
     while((replace_pos = result.find("\\cdot")) != -1){
         result = result.replace(replace_pos, 5, "*");
