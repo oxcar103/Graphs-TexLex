@@ -31,9 +31,8 @@ real            -?{num}+(\.{num}+)?
 var_exp         \^{real}
 monomial        {real}?({var}({var_exp})?)|{real}
 polynomial      {monomial}(({add}|{sub}){monomial})*
-exp             \\exp\({polynomial}\){var_exp}?
-log             \\log\({polynomial}\){var_exp}?
-type_of_func    ({polynomial}|{log}|{exp})
+elsc            \\(exp|log|sin|cos)\({polynomial}\){var_exp}?
+type_of_func    ({polynomial}|{elsc})
 right_part      ({type_of_func})(({add}|{sub})({type_of_func}))*
 function        {f_var}{eq}{right_part}
 
@@ -98,12 +97,22 @@ string transform_function(string latex_form){
     }
 
     // Exponencial
-    if((replace_pos = result.find("\\exp")) != -1){
+    while((replace_pos = result.find("\\exp")) != -1){
         result = result.erase(replace_pos, 1);
     }
 
     // Logaritmo
-    if((replace_pos = result.find("\\log")) != -1){
+    while((replace_pos = result.find("\\log")) != -1){
+        result = result.erase(replace_pos, 1);
+    }
+
+    // Seno
+    while((replace_pos = result.find("\\sin")) != -1){
+        result = result.erase(replace_pos, 1);
+    }
+
+    // Coseno
+    while((replace_pos = result.find("\\cos")) != -1){
         result = result.erase(replace_pos, 1);
     }
 
@@ -126,6 +135,6 @@ void insert_graphs (){
          << "\\node at (\\x, 0) [below] {\\x};\n"
          << "\\foreach \\y in {-6,-5,...,13}\n"
          << "\\node at (0,\\y) [left] {\\y};\n"
-         << "\\end{tikzpicture}\n\n";
+         << "\\end{tikzpicture}\n";
 }
 
