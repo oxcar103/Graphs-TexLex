@@ -12,7 +12,6 @@ using namespace std;
     queue<string> graphs;
     ofstream file;
     
-    void function_found (string function);
     string transform_function(string latex_form);
     void insert_graphs ();
 %}
@@ -44,8 +43,8 @@ function        {f_var}{eq}{right_part}
 <MATH_MODE>\$                           { file << yytext; BEGIN(INITIAL); }
 \$\$                                    { file << yytext; BEGIN(MATH_ENV); }
 <MATH_ENV>\$\$                          { file << yytext; BEGIN(INITIAL); }
-<MATH_MODE>{function}                   { file << yytext; function_found(string(yytext)); }
-<MATH_ENV>{function}                    { file << yytext; function_found(string(yytext)); }
+<MATH_MODE>{function}                   { file << yytext; graphs.push(string(yytext)); }
+<MATH_ENV>{function}                    { file << yytext; graphs.push(string(yytext)); }
 (\n\n|"\\\\")                           { file << yytext; if(!graphs.empty()){insert_graphs();} }
 
 <MATH_MODE>(.|\n)                       { file << yytext; }
@@ -77,10 +76,6 @@ int main (int argc, char *argv[]) {
     yylex();
 
     return 0;
-}
-
-void function_found (string function){
-    graphs.push(transform_function(function));
 }
 
 string transform_function(string latex_form){
@@ -131,7 +126,7 @@ void insert_graphs (){
          << "\\draw[->] (0,-2) -- (0,4) node[above] {$f(x)$};\n";
     
     while(!graphs.empty()){
-        file << "\\draw[color=" << colors[i] << "] plot function{"<< graphs.front() <<"};\n";
+        file << "\\draw[color=" << colors[i] << "] plot function{"<< transform_function(graphs.front()) <<"} node[right] {$" << graphs.front() << "$};\n";
         graphs.pop();
         i = (i + 1) % 10;
     }
