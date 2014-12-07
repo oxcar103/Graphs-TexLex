@@ -33,8 +33,9 @@ monomial        {real}?({var}({var_exp})?)|{real}
 polynomial      {monomial}(({add}|{sub}){monomial})*
 p_function      {f_var}{eq}{polynomial}
 exp             \\exp\({p_function}\){var_exp}?
-exp_function    {exp}(({add}|{sub}){p_function})*
-function        ({p_function}|{exp_function})
+log             \\log\({p_function}\){var_exp}?
+l/e_function    ({exp}|{log})(({add}|{sub}){p_function})*
+function        ({p_function}|{l/e_function})
 
 
 %%
@@ -95,7 +96,12 @@ string transform_function(string latex_form){
     }
 
     // Exponencial
-    while((replace_pos = result.find("\\exp")) != -1){
+    if((replace_pos = result.find("\\exp")) != -1){
+        result = result.erase(replace_pos, 1);
+    }
+
+    // Logaritmo
+    if((replace_pos = result.find("\\log")) != -1){
         result = result.erase(replace_pos, 1);
     }
 
